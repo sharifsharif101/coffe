@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حجز Arabica 8888888Coffee</title>
+<title>حجز Arabica151 Coffee</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
@@ -99,6 +99,9 @@ input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-in
 </div>
 
 <script>
+// ضع رابط Google Apps Script Web App هنا
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQ80EOALWH7u6aibwIoOMmesi7A_kkI5JUJVNDrbIwOW2Hy8LJT0n04YGhi90kLl90/exec';
+
 let offers = [
   { cups: 50, price: 700 },
   { cups: 70, price: 850 },
@@ -193,7 +196,7 @@ function checkBookingAvailability() {
   const msgEl = document.getElementById('availabilityMessage');
 
   if(date && time){
-    fetch('https://script.google.com/macros/s/AKfycbw4O7KqhwwI46KW9Vu2kTVKt9Hq5AyGqaQxf8oW9qzgfVIQ96WA41aS5gpUwu8WGD7gbQ/exec')
+    fetch(SCRIPT_URL)
       .then(res => res.json())
       .then(bookings => {
         const conflict = bookings.some(b => b.date === date && b.time === time);
@@ -236,7 +239,7 @@ function submitBooking() {
     items
   };
 
-  fetch('https://script.google.com/macros/s/AKfycby-QLTK247_UEv_yT9iYGKO1fYfJGym45YrztBXp73A33Nrpca-rxp1mpLE4QLZL2ZYvg/exec', {
+  fetch(SCRIPT_URL, {
     method:'POST',
     body:JSON.stringify(bookingData)
   }).then(res=>res.json()).then(response=>{
