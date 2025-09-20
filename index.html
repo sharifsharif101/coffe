@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حجز Arabica Coffee</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+.offer-card { transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; }
+.offer-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.offer-card.selected { border-color:#111827; background-color:#e5e7eb; box-shadow:4px 10px rgba(0,0,0,0.08);}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.loader{border:4px solid #e5e7eb;border-top:4px solid #111827;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto;}
+.mini-loader{border:2px solid #e5e7eb;border-top:2px solid #111827;width:16px;height:16px;}
+@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.social-icon{transition: transform 0.2s ease, fill 0.2s ease;}
+.social-icon:hover{transform:scale(1.1);}
+</style>
+</head>
+<body dir="rtl" class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+
+<div class="bg-white rounded-3xl shadow-xl overflow-hidden max-w-lg w-full p-8 space-y-8">
+  <div class="flex flex-col items-center space-y-4">
+    <img src="https://i.postimg.cc/xdLVsmYd/Whats-App-Image-2025-09-04-at-12-25-51-PM.jpg" alt="Arabica Coffee Logo" class="h-24 w-24 rounded-full border-4 border-gray-800 shadow-lg">
+    <h1 class="text-4xl font-extrabold text-gray-900">Arabica Coffee</h1>
+    <p class="text-gray-600 text-lg text-center">عربة مشروبات مُتنقلة لـ مناسبتكم السعيدة.</p>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold text-gray-800 text-center">أختر الخدمة المطلوبة</h2>
+    <div id="offersContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[120px]">
+      <div class="loader col-span-3"></div>
+      <p class="text-center col-span-3 text-gray-500 -mt-4">جاري تحميل الباقات...</p>
+    </div>
+  </div>
+
+  <div id="bookingForm" class="hidden space-y-6">
+    <h2 class="text-3xl font-bold text-gray-900 text-center">بيانات الحجز</h2>
+
+    <div class="text-xl font-bold text-gray-800 text-center py-3 px-4 rounded-xl bg-gray-100">
+      <p>الخطة المختارة: <span id="selectedPlan" class="text-black font-semibold">0</span> كوب</p>
+      <p>إجمالي المتبقي: <span id="remainingCups" class="text-black font-semibold">0</span></p>
+      <p>المبلغ الإجمالي: <span id="totalPrice" class="text-black font-semibold">0</span> ريال</p>
+    </div>
+
+    <div class="space-y-4">
+      <h3 class="text-xl font-bold text-gray-800">تحديد الأصناف الفرعية (وحدة: كوب)</h3>
+      <div id="subItemsContainer" class="bg-gray-50 p-6 rounded-2xl border-2 border-gray-200 space-y-4">
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="fullName" class="block text-gray-700 font-medium mb-1">الاسم الثلاثي</label>
+        <input type="text" id="fullName" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" placeholder="أدخل اسمك الثلاثي" required>
+      </div>
+      <div>
+        <label for="phoneNumber" class="block text-gray-700 font-medium mb-1">رقم الجوال</label>
+        <input type="tel" id="phoneNumber" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" placeholder="05xxxxxxxx" required>
+        <p id="phoneError" class="text-red-500 text-sm mt-1 h-4"></p>
+      </div>
+    </div>
+
+    <div>
+      <label for="location" class="block text-gray-700 font-medium mb-1">الموقع (رابط جوجل ماب)</label>
+      <input type="url" id="location" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" placeholder="الصق رابط الموقع هنا" required>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="bookingDate" class="block text-gray-700 font-medium mb-1">التاريخ</label>
+        <input type="date" id="bookingDate" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" required>
+      </div>
+      <div>
+        <label for="bookingTime" class="block text-gray-700 font-medium mb-1">الساعة</label>
+        <input type="time" id="bookingTime" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" required>
+        <p class="text-xs text-gray-500 mt-1">مدة الحجز ثابتة لمدة 6 ساعات من الوقت المحدد.</p>
+      </div>
+    </div>
+
+    <div id="availabilityMessage" class="text-center font-semibold h-6"></div>
+
+    <div>
+      <label for="notes" class="block text-gray-700 font-medium mb-1">ملاحظات</label>
+      <textarea id="notes" rows="2" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" placeholder="أي تفاصيل إضافية..."></textarea>
+    </div>
+
+    <div class="bg-blue-100 text-blue-800 p-4 rounded-xl text-center font-semibold">
+      سيتم التواصل معكم لتأكيد الحجز ودفع العربون.
+    </div>
+
+    <button id="submitBtn" onclick="submitBooking()" class="w-full bg-gray-800 text-white font-bold p-4 rounded-xl shadow-lg hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-400 transition-all duration-300 opacity-50 cursor-not-allowed" disabled>
+      <span id="btnText">تأكيد الحجز</span>
+      <span id="btnLoader" class="hidden loader !w-6 !h-6 !border-2 !border-gray-400 !border-t-transparent mx-auto"></span>
+    </button>
+  </div>
+</div>
+
+<script>
+let offers = [
+  { cups: 50, price: 700 },
+  { cups: 70, price: 850 },
+  { cups: 100, price: 1000 }
+];
+let subItems = ['V60', 'المهيتو', 'كركديه'];
+let selectedCups = 0, selectedPrice = 0, isSlotAvailable = false;
+
+window.onload = () => {
+  renderOffers(offers);
+  renderSubItems(subItems);
+  setupDatePicker();
+  addEventListeners();
+};
+
+function renderOffers(data) {
+  const container = document.getElementById('offersContainer');
+  container.innerHTML = '';
+  data.forEach(offer => {
+    const card = document.createElement('div');
+    card.className = 'offer-card bg-gray-100 p-6 rounded-2xl border-2 border-gray-200 cursor-pointer text-center';
+    card.id = `offer${offer.cups}`;
+    card.innerHTML = `<p class="text-xl font-bold text-gray-900">${offer.cups} كوب</p><p class="text-lg text-gray-700">${offer.price} ريال</p>`;
+    card.onclick = () => selectMachine(offer.cups, offer.price);
+    container.appendChild(card);
+  });
+}
+
+function renderSubItems(items) {
+  const container = document.getElementById('subItemsContainer');
+  container.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'flex justify-between items-center';
+    div.innerHTML = `<label for="${item}Cups" class="text-xl font-bold text-gray-800">${item}</label>
+      <input type="number" id="${item}Cups" data-item-name="${item}" min="0" value="0" class="sub-item-input w-24 p-2 text-center border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800" oninput="updateTotals()">`;
+    container.appendChild(div);
+  });
+}
+
+function setupDatePicker() {
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  document.getElementById('bookingDate').setAttribute('min', today.toISOString().split('T')[0]);
+}
+
+function addEventListeners() {
+  ['fullName','phoneNumber','location','bookingDate','bookingTime'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateTotals);
+  });
+  ['bookingDate','bookingTime'].forEach(id => {
+    document.getElementById(id).addEventListener('change', checkBookingAvailability);
+  });
+}
+
+function selectMachine(cups, price) {
+  selectedCups = cups; selectedPrice = price;
+  document.querySelectorAll('.offer-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`offer${cups}`).classList.add('selected');
+  document.getElementById('selectedPlan').textContent = cups;
+  document.getElementById('totalPrice').textContent = price;
+  document.getElementById('bookingForm').classList.remove('hidden');
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  updateTotals();
+}
+
+function updateTotals() {
+  if(selectedCups===0) return;
+  const phoneInput = document.getElementById('phoneNumber');
+  const phoneError = document.getElementById('phoneError');
+  const phoneRegex = /^05\d{8}$/;
+  const isPhoneValid = phoneRegex.test(phoneInput.value);
+  phoneError.textContent = phoneInput.value && !isPhoneValid ? "يجب أن يبدأ بـ 05 ويتكون من 10 أرقام." : "";
+
+  let totalSubItems = Array.from(document.querySelectorAll('.sub-item-input')).reduce((acc,i)=>acc+(parseInt(i.value)||0),0);
+  const remaining = selectedCups-totalSubItems;
+  const remainingEl = document.getElementById('remainingCups');
+  remainingEl.textContent = remaining>=0?remaining:0;
+  remainingEl.parentElement.classList.toggle('text-red-600',remaining<0);
+
+  const allFieldsFilled = ['fullName','phoneNumber','location','bookingDate','bookingTime'].every(id=>document.getElementById(id).value);
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = !(remaining===0 && allFieldsFilled && isPhoneValid && isSlotAvailable);
+  btn.classList.toggle('opacity-50',btn.disabled);
+  btn.classList.toggle('cursor-not-allowed',btn.disabled);
+}
+
+function checkBookingAvailability() {
+  const date = document.getElementById('bookingDate').value;
+  const time = document.getElementById('bookingTime').value;
+  const msgEl = document.getElementById('availabilityMessage');
+  if(date && time){
+    isSlotAvailable = true;
+    msgEl.textContent = '✅ الموعد متاح';
+    msgEl.className = 'text-center font-semibold h-6 text-green-600';
+    updateTotals();
+  }
+}
+
+function submitBooking() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('btnText').classList.add('hidden');
+  document.getElementById('btnLoader').classList.remove('hidden');
+
+  const items = {};
+  document.querySelectorAll('.sub-item-input').forEach(i=>{if(parseInt(i.value)>0)items[i.dataset.itemName]=parseInt(i.value);});
+  const bookingData = {
+    fullName: document.getElementById('fullName').value,
+    phoneNumber: document.getElementById('phoneNumber').value,
+    bookingDate: document.getElementById('bookingDate').value,
+    bookingTime: document.getElementById('bookingTime').value,
+    packageCups: selectedCups,
+    totalPrice: selectedPrice,
+    location: document.getElementById('location').value,
+    notes: document.getElementById('notes').value,
+    items
+  };
+
+fetch('https://script.google.com/macros/s/AKfycby-QLTK247_UEv_yT9iYGKO1fYfJGym45YrztBXp73A33Nrpca-rxp1mpLE4QLZL2ZYvg/exec', {
+
+    method:'POST',
+    body:JSON.stringify(bookingData)
+  }).then(res=>res.json()).then(response=>{
+    if(response.status==='success'){
+      alert('تم إرسال الحجز بنجاح! سيتم التواصل معكم لتأكيد الحجز ودفع العربون.');
+      resetForm();
+    } else alert('حدث خطأ: '+response.message);
+  }).catch(err=>{
+    console.error(err);
+    alert('لم نتمكن من إرسال الحجز. الرجاء المحاولة مرة أخرى.');
+  }).finally(()=>{
+    btn.disabled=false;
+    document.getElementById('btnText').classList.remove('hidden');
+    document.getElementById('btnLoader').classList.add('hidden');
+  });
+}
+
+function resetForm(){
+  document.getElementById('bookingForm').classList.add('hidden');
+  document.querySelectorAll('.offer-card').forEach(c=>c.classList.remove('selected'));
+  ['fullName','phoneNumber','location','bookingDate','bookingTime','notes'].forEach(id=>document.getElementById(id).value='');
+  selectedCups=0; selectedPrice=0; isSlotAvailable=false;
+  updateTotals();
+}
+</script>
+
+</body>
+</html>
