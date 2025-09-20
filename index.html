@@ -191,11 +191,28 @@ function checkBookingAvailability() {
   const date = document.getElementById('bookingDate').value;
   const time = document.getElementById('bookingTime').value;
   const msgEl = document.getElementById('availabilityMessage');
+
   if(date && time){
-    isSlotAvailable = true;
-    msgEl.textContent = '✅ الموعد متاح';
-    msgEl.className = 'text-center font-semibold h-6 text-green-600';
-    updateTotals();
+    fetch('https://script.google.com/macros/s/AKfycby-QLTK247_UEv_yT9iYGKO1fYfJGym45YrztBXp73A33Nrpca-rxp1mpLE4QLZL2ZYvg/exec')
+      .then(res => res.json())
+      .then(bookings => {
+        const conflict = bookings.some(b => b.date === date && b.time === time);
+        if(conflict){
+          isSlotAvailable = false;
+          msgEl.textContent = '❌ هذا الموعد محجوز بالفعل، الرجاء اختيار وقت آخر.';
+          msgEl.className = 'text-center font-semibold h-6 text-red-600';
+        } else {
+          isSlotAvailable = true;
+          msgEl.textContent = '✅ الموعد متاح';
+          msgEl.className = 'text-center font-semibold h-6 text-green-600';
+        }
+        updateTotals();
+      })
+      .catch(err => {
+        console.error(err);
+        msgEl.textContent = '⚠️ خطأ في التحقق من المواعيد، حاول مجددًا.';
+        msgEl.className = 'text-center font-semibold h-6 text-yellow-600';
+      });
   }
 }
 
@@ -219,8 +236,7 @@ function submitBooking() {
     items
   };
 
-fetch('https://script.google.com/macros/s/AKfycby-QLTK247_UEv_yT9iYGKO1fYfJGym45YrztBXp73A33Nrpca-rxp1mpLE4QLZL2ZYvg/exec', {
-
+  fetch('https://script.google.com/macros/s/AKfycby-QLTK247_UEv_yT9iYGKO1fYfJGym45YrztBXp73A33Nrpca-rxp1mpLE4QLZL2ZYvg/exec', {
     method:'POST',
     body:JSON.stringify(bookingData)
   }).then(res=>res.json()).then(response=>{
